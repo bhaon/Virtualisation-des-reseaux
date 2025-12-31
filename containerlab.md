@@ -4,7 +4,7 @@ Ce cours complet vous guide dans l'utilisation de **Containerlab**, un outil ope
 
 **Prérequis** :  
 - Un système Linux (Ubuntu recommandé).  
-- Docker installé, up & running.  
+- Docker installé, UP & Running.  
 - Connaissances basiques de YAML et de la ligne de commande.
 
 **Date de mise à jour** : Décembre 2025 (basé sur la version la plus récente disponible, autour de 0.72.x).
@@ -192,20 +192,78 @@ topology:
     - endpoints: ["spine2:eth2", "leaf2:eth2"]
 ```
 
-Déployez et configurez EVPN/VXLAN comme dans les cours de ce répertoire !
+Déployez et configurez EVPN/VXLAN comme dans les cours précédents !
 
-## 8. Astuces et Bonnes Pratiques
+## 8. Capture de Trafic (Packet Capture) dans Containerlab
+
+La capture de paquets est une fonctionnalité essentielle pour le troubleshooting. Containerlab utilise les **network namespaces** Docker, donc les interfaces des nodes sont isolées. Pour capturer :
+
+### Méthode Basique avec tcpdump (sur l'hôte Containerlab)
+
+Installez tcpdump si nécessaire : `sudo apt install tcpdump`.
+
+Commande générale :
+
+```bash
+sudo ip netns exec clab-<lab-name>-<node-name> tcpdump -i <interface> [options]
+```
+
+Exemple pour capturer sur eth1 d'un node cEOS nommé "leaf1" dans le lab "leaf-spine-evpn" :
+
+```bash
+sudo ip netns exec clab-leaf-spine-evpn-leaf1 tcpdump -nni eth1 -w capture.pcap
+```
+
+- `-n` : Pas de résolution DNS.
+- `-i` : Interface.
+- `-w` : Écrit dans un fichier PCAP.
+
+Pour afficher en live : retirez `-w`.
+
+### Capture Remote avec Wireshark (depuis votre machine locale)
+
+Pipez la sortie vers Wireshark installé localement :
+
+```bash
+ssh user@host-containerlab "sudo ip netns exec clab-<lab>-<node> tcpdump -U -nni <interface> -w -" | wireshark -k -i -
+```
+
+- `-U` : Unbuffered pour streaming live.
+- Le pipe `| wireshark -k -i -` ouvre Wireshark et lit depuis stdin.
+
+### Script Helper pour Simplifier
+
+Créez un script `pcap.sh` :
+
+```bash
+#!/bin/sh
+# Usage: ./pcap.sh <host> <container-name> <interface1[,interface2]>
+ssh $1 "sudo ip netns exec $2 tcpdump -U -nni $3 -w -" | wireshark -k -i -
+```
+
+Exemple : `./pcap.sh user@vm clab-lab-leaf1 eth1,eth2`
+
+### Intégration Avancée
+
+- **VS Code Extension Containerlab** : Interface graphique pour sélectionner une interface et lancer Wireshark (via Edgeshark ou VNC). Très pratique !
+- **Edgeshark** : Outil GUI web pour captures (intégré dans l'extension VS Code).
+
+Pour plus de détails : https://containerlab.dev/manual/wireshark/
+
+## 9. Astuces et Bonnes Pratiques
 
 - **Startup-config** : Placez des fichiers .cfg et utilisez `binds` ou `startup-config`.
 - **Graph** : Visualisez avec `containerlab graph`.
-- **Intégration VS Code** : Extension officielle pour édition visuelle.
+- **Intégration VS Code** : Extension officielle pour édition visuelle et captures.
 - **Automation** : Combinez avec Ansible/Netmiko pour config auto.
 - **Performances** : Utilisez des MTU jumbo si VXLAN.
 - **Dépannage** : `docker logs <container>` ou `containerlab inspect`.
 
-## 9. Conclusion
+## 10. Conclusion
 
-Containerlab révolutionne les labs réseaux en rendant les topologies reproductibles, rapides et intégrables dans des workflows DevOps. Commencez par les exemples officiels, puis créez vos propres labs multi-vendor.
+Containerlab révolutionne les labs réseaux en rendant les topologies reproductibles, rapides et intégrables dans des workflows DevOps. Avec les captures de trafic intégrées, il devient un outil complet pour le debugging.
+
+Commencez par les exemples officiels, puis créez vos propres labs multi-vendor.
 
 Ressources :
 - Documentation : https://containerlab.dev
