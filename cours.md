@@ -50,11 +50,11 @@ docker exec -it clab-vxlan-evpn-lab-spine1 Cli
 ### Problèmes des réseaux de niveau 2
 - **Boucles** : Risque de broadcast storm si redondance non contrôlée.
 - **ARP et Broadcast** : Requêtes ARP et broadcasts inondent tout le domaine L2.
-- **Pas de Control Plane** : Aucune découverte dynamique avancée des hôtes.
+- **Pas de Control Plane** : Aucune découverte dynamique avancée des adresses Mac des hôtes.
 - **Limites d’échelle** : Domaine L2 trop large = instabilité.
 
 ### Solutions legacy niveau 2
-- **Spanning Tree Protocol (STP/RSTP/MSTP)** : Bloque les liens redondants → convergence lente, sous-utilisation.
+- **Spanning Tree Protocol (STP/RSTP/MSTP)** : Bloque les liens redondants → convergence lente, sous-utilisation des liens.
 - **LACP** : Agrégation de liens pour bande passante et redondance.
 - **MC-LAG** : LACP multi-châssis pour haute disponibilité sans STP.
 
