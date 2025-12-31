@@ -4,7 +4,7 @@ Ce cours complet vous guide dans l'utilisation de **Containerlab**, un outil ope
 
 **Prérequis** :  
 - Un système Linux (Ubuntu recommandé).  
-- Docker installé et en marche.  
+- Docker installé, up & running.  
 - Connaissances basiques de YAML et de la ligne de commande.
 
 **Date de mise à jour** : Décembre 2025 (basé sur la version la plus récente disponible, autour de 0.72.x).
@@ -52,7 +52,7 @@ Pour une version spécifique :
 bash -c "$(curl -sL https://get.containerlab.dev)" -- -v 0.72.0
 ```
 
-Sur macOS/Windows : Utilisez un VM Linux ou un devcontainer VS Code (voir docs officielles).
+Sur macOS/Windows : Utilisez une VM Linux ou un devcontainer VS Code (voir docs officielles).
 
 Mise à jour :
 
@@ -192,7 +192,7 @@ topology:
     - endpoints: ["spine2:eth2", "leaf2:eth2"]
 ```
 
-Déployez et configurez EVPN/VXLAN comme dans les cours précédents !
+Déployez et configurez EVPN/VXLAN comme dans les cours de ce répertoire !
 
 ## 8. Astuces et Bonnes Pratiques
 
